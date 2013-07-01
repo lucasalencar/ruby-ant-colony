@@ -1,8 +1,18 @@
 class Graph
+  attr_reader :vertices
+
   def initialize(vertices = [], directed = false)
     @vertices = Hash.new
     add_vertices(vertices)
     @directed = directed
+  end
+
+  def vertex(id)
+    @vertices[id]
+  end
+
+  def directed?
+    @directed
   end
 
   def add_vertex(id)
@@ -10,15 +20,15 @@ class Graph
   end
 
   def add_edge(start, destination, weight)
-    @vertices[start].add(Edge.new(start, destination, weight))
+    @vertices[start].add(start, destination, weight)
     unless @directed
-      @vertices[destination].add(Edge.new(destination, start, weight))
+      @vertices[destination].add(destination, start, weight)
     end
   end
 
-  def add_edges(commom_start, destinations, weights)
-    destinations.each_with_index do |destination, index|
-      add_edge(commom_start, destination, weights[index])
+  def add_edges(commom_start, destinations)
+    destinations.each do |dest|
+      add_edge(commom_start, dest[:v], dest[:w])
     end
   end
 
@@ -42,27 +52,20 @@ class Vertex
 
   def initialize(id, edges = [])
     @id = id
-    edges.each do |edge|
-      raise "Wrong Edge Declaration: vertex #{id} on edge #{edge}" unless edge.is_valid?(@id)
-    end
-    @edges = edges
+    @edges = Hash.new
   end
 
-  def add(edge)
-    if edge.kind_of?(Edge)
-      @edges << edge unless @edges.include?(edge)
-    else
-      raise "Object is not kind of Edge."
-    end
+  def add(start, destination, weight)
+    edge = Edge.new(start, destination, weight)
+    @edges.store(destination, edge) unless @edges.has_value?(edge)
   end
 
   def inspect
     edges = ""
-    @edges.each do |edge|
-      edges << edge.inspect
-      edges << ',' unless edge == @edges.last
+    @edges.each_value do |edge|
+      edges << edge.inspect + ','
     end
-    "{#{id} => [#{edges}]}"
+    "{#{id} => [#{edges.chop}]}"
   end
 end
 
@@ -79,11 +82,16 @@ class Edge
     @start == edge.start and @destination == edge.destination and @weight == edge.weight
   end
 
-  def is_valid?(id)
-    start == id or destination == id
-  end
-
   def inspect
-    "#{destination}"
+    "(#{destination}, #{weight})"
   end
 end
+
+# g = Graph.new([1, 2, 3, 4, 5])
+# g.add_edges(1, [{v: 2, w: 0}, {v: 5, w: 0}])
+# g.add_edges(2, [{v: 1, w: 0}, {v: 3, w: 0}, {v: 4, w: 0}, {v: 5, w: 0}])
+# g.add_edges(3, [{v: 2, w: 0}, {v: 4, w: 0}])
+# g.add_edges(4, [{v: 2, w: 0}, {v: 3, w: 0}, {v: 5, w: 0}])
+# g.add_edges(5, [{v: 1, w: 0}, {v: 2, w: 0}, {v: 4, w: 0}])
+#
+# p g
