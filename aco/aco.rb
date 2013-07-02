@@ -4,7 +4,7 @@ require_relative "ant_enviroment"
 # Shortest path solution: [A B C D E A]
 
 class ACO
-  attr_reader :alpha, :beta, :rho, :q
+  attr_reader :alpha, :beta, :rho, :q, :solution
 
   def initialize(enviroment, start_vertex, max_iterations, num_ants, alpha: 1, beta: 1, rho: 0.5, q: 1)
     @enviroment = enviroment
@@ -17,17 +17,17 @@ class ACO
     @q = q
   end
 
-  def generate_ants
+  def generate_ants(target_state)
     ants = [nil] * @num_ants
     ants.map do
-      Ant.new(@start_vertex)
+      Ant.new(@start_vertex, target_state)
     end
   end
 
-  def run
+  def run(target_state)
     @enviroment.reset_pheromones
     @max_iterations.times do
-      @ants = generate_ants
+      @ants = generate_ants(target_state)
       # Ants find a path using pheromones
       @ants.each { |ant| ant.construct_solution(@enviroment, @alpha, @beta) }
       @ants.delete_if { |ant| not ant.alive? }
@@ -40,7 +40,14 @@ class ACO
         @solution = best_solution
       end
     end
-    puts "Solution: #{@solution.inspect}"
+  end
+
+  def best_ant(ants)
+    ants.min_by { |ant| @enviroment.total_weight(ant.path) }
+  end
+
+  def better_solution?(path_a, path_b)
+    @enviroment.total_weight(path_a) < @enviroment.total_weight(path_b)
   end
 
   def self.test_enviroment

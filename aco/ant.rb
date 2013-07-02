@@ -1,8 +1,9 @@
 class Ant
   attr_reader :path
 
-  def initialize(start_state)
+  def initialize(start_state, target_state)
     @path = [start_state]
+    @target_state = target_state
     @alive = true
   end
 
@@ -14,12 +15,8 @@ class Ant
     @path.last
   end
 
-  def target_state
-    'E'
-  end
-
   def reached_end?
-    current_state == target_state
+    current_state == @target_state
   end
 
   def move(state)
@@ -33,7 +30,7 @@ class Ant
     edges.compact
   end
 
-  def construct_solution(enviroment, alpha, beta, &block)
+  def construct_solution(enviroment, alpha, beta)
     @current_enviroment = enviroment
     until reached_end? or not @alive
       @alive = false if available_edges.empty?

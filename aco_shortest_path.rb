@@ -1,4 +1,5 @@
 require_relative "aco/aco"
+require_relative "aco/ant"
 
 class ACOShortestPath < ACO
   # Strength of pheromone on decision probability (between 0 and 1)
@@ -19,15 +20,8 @@ class ACOShortestPath < ACO
       alpha: Alpha, beta: Beta, rho: Rho, q: Q
     )
   end
-
-  def best_ant(ants)
-    ants.min_by { |ant| @enviroment.total_weight(ant.path) }
-  end
-
-  def better_solution?(path_a, path_b)
-    @enviroment.total_weight(path_a) < @enviroment.total_weight(path_b)
-  end
 end
 
 a = ACOShortestPath.new('A')
-a.run
+a.run('E')
+puts "Solution: #{a.solution}"
