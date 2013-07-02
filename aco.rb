@@ -1,6 +1,8 @@
 require_relative "ant"
 require_relative "ant_enviroment"
 
+require "pry"
+
 # Shortest path solution: [A B C D E A]
 
 class ACO
@@ -13,7 +15,7 @@ class ACO
   # Rate of pheromone increase
   Q = 1.0
 
-  def initialize(start_vertex, max_iterations = 4, num_ants = 12)
+  def initialize(start_vertex, max_iterations = 10, num_ants = 5)
     @max_iterations = max_iterations
     @num_ants = num_ants
     @start_vertex = start_vertex
@@ -21,11 +23,10 @@ class ACO
   end
 
   def generate_ants
-    ants = Array.new
-    @num_ants.times do
-      ants << Ant.new(@start_vertex)
+    ants = [nil] * @num_ants
+    ants.map do
+      Ant.new(@start_vertex)
     end
-    ants
   end
 
   def run
@@ -33,29 +34,27 @@ class ACO
     @max_iterations.times do
       @ants = generate_ants
       # Ants find a path using pheromones
-      @ants.each do |ant|
-        ant.construct_solution(@enviroment, Alpha, Beta)
-      end
+      @ants.each { |ant| ant.construct_solution(@enviroment, Alpha, Beta) }
+      @ants.delete_if { |ant| not ant.alive? }
       # Update pheromones
       @enviroment.evaporate(Rho)
-      @ants.each do |ant|
-        @enviroment.update_pheromones(ant.path, Q)
-      end
+      @ants.each { |ant| @enviroment.update_pheromones(ant.path, Q) }
       # if Local solution better than global, become global solution
       best_solution = best_ant(@ants).path
-      if @solution.nil? or @enviroment.total_weight(best_solution) < @enviroment.total_weight(@solution)
+      if @solution.nil? or better_solution?(best_solution, @solution)
         @solution = best_solution
       end
     end
+    p @enviroment
     puts "Solution: #{@solution.inspect}"
   end
 
   def best_ant(ants)
-    best = ants.first
-    ants.each do |ant|
-      best = ant if @enviroment.total_weight(ant.path) < @enviroment.total_weight(best.path)
-    end
-    best
+    ants.min_by { |ant| @enviroment.total_weight(ant.path) }
+  end
+
+  def better_solution?(path_a, path_b)
+    @enviroment.total_weight(path_a) < @enviroment.total_weight(path_b)
   end
 
   def self.test_enviroment

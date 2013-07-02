@@ -5,6 +5,11 @@ class Ant
 
   def initialize(start_state)
     @path = [start_state]
+    @alive = true
+  end
+
+  def alive?
+    @alive
   end
 
   def current_state
@@ -28,10 +33,9 @@ class Ant
 
   def construct_solution(enviroment, alpha, beta)
     @current_enviroment = enviroment
-    while current_state != target_state
+    while current_state != target_state and @alive
       probs = available_edges_probabilities(alpha, beta)
       move(choose_next_move(probs))
-      # p @path
     end
   end
 
@@ -46,6 +50,7 @@ class Ant
   end
 
   def choose_next_move(probs)
+    return @alive = false if available_edges.empty?
     choice = rand
     limit = 0
     probs.each_with_index do |prob, index|

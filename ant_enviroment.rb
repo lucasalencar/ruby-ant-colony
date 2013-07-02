@@ -18,12 +18,9 @@ class AntEnviroment < Graph
   def update_pheromones(ant_path, q)
     path = ant_path.clone
     pheromone_update = q / path.size
-    path.reverse!
-    start = path.pop
-    until path.empty?
-      destination = path.pop
-      update_pheromone(start, destination, pheromone_update)
-      start = destination
+    edges = edges_from_path(path)
+    edges.each do |e|
+      update_pheromone(e.start, e.destination, pheromone_update)
     end
   end
 
@@ -33,10 +30,8 @@ class AntEnviroment < Graph
   end
 
   def edges_from_path(input_path)
-    path = input_path.clone
-    path.reverse!
-    edges = Array.new
-    start = path.pop
+    path = input_path.reverse.clone
+    edges = Array.new; start = path.pop
     until path.empty?
       destination = path.pop
       edges << @vertices[start].edges[destination]
