@@ -36,6 +36,10 @@ class Graph
     ids.each { |id| add_vertex(id) }
   end
 
+  def has_edge?(start_vertex, destination_vertex)
+    @vertices[start_vertex].edges.keys.include?(destination_vertex)
+  end
+
   def inspect
     output = ""
     @vertices.each_value do |vertex|
