@@ -13,7 +13,7 @@ class ACO
   # Rate of pheromone increase
   Q = 1.0
 
-  def initialize(start_vertex, max_iterations = 2, num_ants = 1)
+  def initialize(start_vertex, max_iterations = 4, num_ants = 12)
     @max_iterations = max_iterations
     @num_ants = num_ants
     @start_vertex = start_vertex
@@ -47,7 +47,7 @@ class ACO
         @solution = best_solution
       end
     end
-    p @solution
+    puts "Solution: #{@solution.inspect}"
   end
 
   def best_ant(ants)

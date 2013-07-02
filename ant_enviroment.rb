@@ -1,12 +1,14 @@
 require_relative "graph"
 
 class AntEnviroment < Graph
+  # Reset all edges pheromones to 0
   def reset_pheromones
     @vertices.each_value do |v|
       v.edges.each_value { |e| e.pheromone = 0.000001 }
     end
   end
 
+  # Evaporates pheromones on every edge
   def evaporate(rho)
     @vertices.each_value do |vertex|
       vertex.edges.each_value { |edge| edge.pheromone *= 1 - rho }

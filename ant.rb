@@ -19,7 +19,7 @@ class Ant
   end
 
   def target_state
-    'D'
+    'E'
   end
 
   def move(state)
@@ -29,24 +29,30 @@ class Ant
   def construct_solution(enviroment, alpha, beta)
     @current_enviroment = enviroment
     while current_state != target_state
-      move(choose_next_move(alpha, beta))
+      probs = available_edges_probabilities(alpha, beta)
+      move(choose_next_move(probs))
+      # p @path
     end
   end
 
-  def choose_next_move(alpha, beta)
-    edges = available_edges
-    probs = available_edges.map do |edge|
+  def available_edges_probabilities(alpha, beta)
+    available_edges.map do |edge|
       neighbor_factor(edge, alpha, beta)
     end
-    begin
-      max = probs.index(probs.max)
-      next_move = edges[max].destination
-      probs[max] = -1
-    end while @path.include?(next_move)
-    next_move
   end
 
   def neighbor_factor(edge, alpha, beta)
     edge.factor(alpha, beta) / available_edges.inject(0) { |sum, e| sum + e.factor(alpha, beta) }
+  end
+
+  def choose_next_move(probs)
+    choice = rand
+    limit = 0
+    probs.each_with_index do |prob, index|
+      # Increasing limit with nexto probability
+      limit += prob
+      # Testing if value is < then limit
+      return available_edges[index].destination if choice < limit
+    end
   end
 end
