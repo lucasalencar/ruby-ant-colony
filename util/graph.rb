@@ -16,7 +16,11 @@ class Graph
   end
 
   def add_vertex(id)
-    @vertices.store(id, Vertex.new(id))
+    unless has_vertex?(id)
+      @vertices.store(id, Vertex.new(id))
+    else
+      raise "Trying to insert a vertex with id that already exists."
+    end
   end
 
   def add_edge(start, destination, weight)
@@ -38,6 +42,10 @@ class Graph
 
   def has_edge?(start_vertex, destination_vertex)
     @vertices[start_vertex].edges.keys.include?(destination_vertex)
+  end
+
+  def has_vertex?(id)
+    @vertices.keys.include?(id)
   end
 
   def inspect
