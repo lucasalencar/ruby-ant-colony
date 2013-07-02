@@ -6,20 +6,17 @@ require "pry"
 # Shortest path solution: [A B C D E A]
 
 class ACO
-  # Strength of pheromone on decision probability (between 0 and 1)
-  Alpha = 1
-  # Strength of heuristic on decision probability (between 0 and 1)
-  Beta = 1
-  # Rate of pheromone evaporation (between 0 and 1)
-  Rho = 0.5
-  # Rate of pheromone increase
-  Q = 1.0
+  attr_reader :alpha, :beta, :rho, :q
 
-  def initialize(start_vertex, max_iterations = 10, num_ants = 5)
+  def initialize(enviroment, start_vertex, max_iterations, num_ants, alpha: 1, beta: 1, rho: 0.5, q: 1)
+    @enviroment = enviroment
+    @start_vertex = start_vertex
     @max_iterations = max_iterations
     @num_ants = num_ants
-    @start_vertex = start_vertex
-    @enviroment = ACO.test_enviroment
+    @alpha = alpha
+    @beta = beta
+    @rho = rho
+    @q = q
   end
 
   def generate_ants
@@ -34,27 +31,18 @@ class ACO
     @max_iterations.times do
       @ants = generate_ants
       # Ants find a path using pheromones
-      @ants.each { |ant| ant.construct_solution(@enviroment, Alpha, Beta) }
+      @ants.each { |ant| ant.construct_solution(@enviroment, @alpha, @beta) }
       @ants.delete_if { |ant| not ant.alive? }
       # Update pheromones
-      @enviroment.evaporate(Rho)
-      @ants.each { |ant| @enviroment.update_pheromones(ant.path, Q) }
+      @enviroment.evaporate(@rho)
+      @ants.each { |ant| @enviroment.update_pheromones(ant.path, @q) }
       # if Local solution better than global, become global solution
       best_solution = best_ant(@ants).path
       if @solution.nil? or better_solution?(best_solution, @solution)
         @solution = best_solution
       end
     end
-    p @enviroment
     puts "Solution: #{@solution.inspect}"
-  end
-
-  def best_ant(ants)
-    ants.min_by { |ant| @enviroment.total_weight(ant.path) }
-  end
-
-  def better_solution?(path_a, path_b)
-    @enviroment.total_weight(path_a) < @enviroment.total_weight(path_b)
   end
 
   def self.test_enviroment
@@ -67,6 +55,3 @@ class ACO
     g
   end
 end
-
-a = ACO.new('A')
-a.run

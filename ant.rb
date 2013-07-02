@@ -16,6 +16,18 @@ class Ant
     @path.last
   end
 
+  def target_state
+    'E'
+  end
+
+  def reached_end?
+    current_state == target_state
+  end
+
+  def move(state)
+    @path << state
+  end
+
   def available_edges
     edges = @current_enviroment.vertex(current_state).edges.values.map do |edge|
       edge unless @path.include?(edge.destination)
@@ -23,17 +35,10 @@ class Ant
     edges.compact
   end
 
-  def target_state
-    'E'
-  end
-
-  def move(state)
-    @path << state
-  end
-
-  def construct_solution(enviroment, alpha, beta)
+  def construct_solution(enviroment, alpha, beta, &block)
     @current_enviroment = enviroment
-    while current_state != target_state and @alive
+    until reached_end? or not @alive
+      @alive = false if available_edges.empty?
       probs = available_edges_probabilities(alpha, beta)
       move(choose_next_move(probs))
     end
@@ -50,7 +55,6 @@ class Ant
   end
 
   def choose_next_move(probs)
-    return @alive = false if available_edges.empty?
     choice = rand
     limit = 0
     probs.each_with_index do |prob, index|
