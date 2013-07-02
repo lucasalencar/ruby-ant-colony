@@ -1,4 +1,4 @@
-require_relative "aco"
+require_relative "aco/aco"
 
 class ACOShortestPath < ACO
   # Strength of pheromone on decision probability (between 0 and 1)

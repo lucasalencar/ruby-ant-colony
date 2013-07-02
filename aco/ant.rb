@@ -1,5 +1,3 @@
-require "pry"
-
 class Ant
   attr_reader :path
 

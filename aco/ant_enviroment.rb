@@ -1,4 +1,4 @@
-require_relative "graph"
+require_relative "../util/graph"
 
 class AntEnviroment < Graph
   # Reset all edges pheromones to 0

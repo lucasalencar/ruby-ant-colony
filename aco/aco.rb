@@ -1,8 +1,6 @@
 require_relative "ant"
 require_relative "ant_enviroment"
 
-require "pry"
-
 # Shortest path solution: [A B C D E A]
 
 class ACO
