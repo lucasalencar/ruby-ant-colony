@@ -28,7 +28,6 @@ class Ant
   end
 
   def available_edges
-    # binding.pry if @current_enviroment.vertex(current_state).nil?
     edges = @current_enviroment.vertex(current_state).edges.values.map do |edge|
       edge unless @path.include?(edge.destination)
     end
