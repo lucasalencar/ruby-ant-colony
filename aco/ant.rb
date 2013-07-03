@@ -15,6 +15,10 @@ class Ant
     @path.last
   end
 
+  def kill
+    @alive = false
+  end
+
   def reached_end?
     current_state == @target_state
   end
@@ -24,6 +28,7 @@ class Ant
   end
 
   def available_edges
+    # binding.pry if @current_enviroment.vertex(current_state).nil?
     edges = @current_enviroment.vertex(current_state).edges.values.map do |edge|
       edge unless @path.include?(edge.destination)
     end
@@ -33,9 +38,10 @@ class Ant
   def construct_solution(enviroment, alpha, beta)
     @current_enviroment = enviroment
     until reached_end? or not @alive
-      @alive = false if available_edges.empty?
+      kill if available_edges.empty?
       probs = available_edges_probabilities(alpha, beta)
       move(choose_next_move(probs))
+      kill if current_state.nil?
     end
   end
 
@@ -58,5 +64,6 @@ class Ant
       # Testing if value is < then limit
       return available_edges[index].destination if choice < limit
     end
+    return nil
   end
 end

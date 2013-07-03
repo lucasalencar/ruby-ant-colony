@@ -54,6 +54,6 @@ class Edge
   end
 
   def inspect
-    "(#{destination}, #{weight}, #{"%.5f" % pheromone})"
+    "(#{destination}, #{weight}, #{pheromone})"
   end
 end

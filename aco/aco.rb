@@ -26,18 +26,27 @@ class ACO
 
   def run(target_state)
     @enviroment.reset_pheromones
-    @max_iterations.times do
+    @max_iterations.times do |iteration|
+      puts
+      puts "~> Iteration: #{iteration}."
       @ants = generate_ants(target_state)
       # Ants find a path using pheromones
-      @ants.each { |ant| ant.construct_solution(@enviroment, @alpha, @beta) }
+      puts "Constructing solution with #{@ants.size} ants."
+      @ants.each { |ant| ant.construct_solution(@enviroment, @alpha, @beta); print '.'; $stdout.flush }
       @ants.delete_if { |ant| not ant.alive? }
+      puts
       # Update pheromones
+      puts "Updating pheromones with #{@ants.size} ants."
       @enviroment.evaporate(@rho)
       @ants.each { |ant| @enviroment.update_pheromones(ant.path, @q) }
       # if Local solution better than global, become global solution
-      best_solution = best_ant(@ants).path
-      if @solution.nil? or better_solution?(best_solution, @solution)
-        @solution = best_solution
+      unless @ants.empty?
+        best_solution = best_ant(@ants).path
+        if @solution.nil? or better_solution?(best_solution, @solution)
+          puts "Best solution so far: #{best_solution.inspect}"
+          puts "Total weight: #{@enviroment.total_weight(best_solution)}"
+          @solution = best_solution
+        end
       end
     end
   end
