@@ -1,5 +1,7 @@
 require_relative "aco/aco"
 require_relative "aco/ant"
+require_relative "aco/ant_enviroment"
+require_relative "util/file_tsp_reader"
 
 class ACOShortestPath < ACO
   # Strength of pheromone on decision probability (between 0 and 1)
@@ -11,9 +13,9 @@ class ACOShortestPath < ACO
   # Rate of pheromone increase
   Q = 1.0
 
-  def initialize(start_vertex, max_iterations = 5, num_ants = 15)
+  def initialize(enviroment, start_vertex, max_iterations = 5, num_ants = 15)
     super(
-      ACO.test_enviroment,
+      enviroment,
       start_vertex,
       max_iterations,
       num_ants,

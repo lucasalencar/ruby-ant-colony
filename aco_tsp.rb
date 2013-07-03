@@ -1,5 +1,7 @@
 require_relative "aco/aco"
 require_relative "aco/ant"
+require_relative "aco/ant_enviroment"
+require_relative "util/file_tsp_reader"
 
 class ACOTsp < ACO
   # Strength of pheromone on decision probability (between 0 and 1)
@@ -11,9 +13,9 @@ class ACOTsp < ACO
   # Rate of pheromone increase
   Q = 1.0
 
-  def initialize(start_vertex, max_iterations = 5, num_ants = 15)
+  def initialize(enviroment, start_vertex, max_iterations = 20, num_ants = 100)
     super(
-      ACO.test_enviroment,
+      enviroment,
       start_vertex,
       max_iterations,
       num_ants,
@@ -35,6 +37,13 @@ class Ant
   end
 end
 
-a = ACOTsp.new('A')
+puts "Reading file"
+enviroment = FileTspReader.example('./benchmarks/tsplib/att48.tsp', AntEnviroment)
+# enviroment = ACO.test_enviroment
+a = ACOTsp.new(enviroment, '1')
+puts "Running algorithm"
 a.run
+puts
 puts "Solution: #{a.solution}"
+puts "Solution size: #{a.solution.size}"
+puts "Solution weight: #{enviroment.total_weight(a.solution)}"
