@@ -38,13 +38,13 @@ class ACO
       # Update pheromones
       puts "Updating pheromones with #{@ants.size} ants."
       @enviroment.evaporate(@rho)
-      @ants.each { |ant| @enviroment.update_pheromones(ant.path, @q) }
+      @ants.each { |ant| @enviroment.update_pheromones(ant.path, optimization_value(ant.path), @q) }
       # if Local solution better than global, become global solution
       unless @ants.empty?
         best_solution = best_ant(@ants).path
         if @solution.nil? or better_solution?(best_solution, @solution)
           puts "Best solution so far: #{best_solution.inspect}"
-          puts "Total weight: #{@enviroment.total_weight(best_solution)}"
+          puts "Optimization value: #{optimization_value(best_solution)}"
           @solution = best_solution
         end
       end
@@ -52,11 +52,15 @@ class ACO
   end
 
   def best_ant(ants)
-    ants.min_by { |ant| @enviroment.total_weight(ant.path) }
+    ants.min_by { |ant| optimization_value(ant.path) }
   end
 
   def better_solution?(path_a, path_b)
-    @enviroment.total_weight(path_a) < @enviroment.total_weight(path_b)
+    optimization_value(path_a) < optimization_value(path_b)
+  end
+
+  def optimization_value(solution)
+    @enviroment.total_weight(solution)
   end
 
   def self.test_enviroment

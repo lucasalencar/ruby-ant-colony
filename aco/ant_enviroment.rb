@@ -15,9 +15,8 @@ class AntEnviroment < Graph
     end
   end
 
-  def update_pheromones(ant_path, q)
-    path = ant_path.clone
-    pheromone_update = q / path.size
+  def update_pheromones(path, optimization_value, q)
+    pheromone_update = q / optimization_value
     edges = edges_from_path(path)
     edges.each do |e|
       update_pheromone(e.start, e.destination, pheromone_update)
