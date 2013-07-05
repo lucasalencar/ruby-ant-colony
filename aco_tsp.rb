@@ -10,6 +10,11 @@ class ACOTsp < ACO
   Beta = 1
   # Rate of pheromone evaporation (between 0 and 1)
   Rho = 0.5
+  # Activates dynamic rho
+  Dynamic_rho = true
+  # Limits rho value
+  Min_rho = 0.3
+  Max_rho = 0.7
   # Rate of pheromone increase
   Q = 1.0
 
@@ -19,7 +24,9 @@ class ACOTsp < ACO
       start_vertex,
       max_iterations,
       num_ants,
-      alpha: Alpha, beta: Beta, rho: Rho, q: Q
+      alpha: Alpha, beta: Beta, q: Q,
+      rho: Rho, dynamic_rho: Dynamic_rho,
+      max_rho: Max_rho, min_rho: Min_rho
     )
   end
 
@@ -39,11 +46,10 @@ end
 
 puts "Reading file"
 enviroment = FileTspReader.example('./benchmarks/tsplib/att48.tsp', AntEnviroment)
-# enviroment = ACO.test_enviroment
 a = ACOTsp.new(enviroment, '1')
 puts "Running algorithm"
 a.run
 puts
 puts "Solution: #{a.solution}"
 puts "Solution size: #{a.solution.size}"
-puts "Solution weight: #{enviroment.total_weight(a.solution)}"
+puts "Solution optimum value: #{enviroment.total_weight(a.solution)}"
