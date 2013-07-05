@@ -1,12 +1,11 @@
 require_relative "ant"
 require_relative "ant_enviroment"
 
-require "pry"
-
 class ACO
-  attr_reader :alpha, :beta, :rho, :q, :solution
+  attr_reader :alpha, :beta, :rho, :q, :solution, :max_rho, :min_rho
 
-  def initialize(enviroment, start_vertex, max_iterations, num_ants, alpha: 1, beta: 1, q: 1, rho: 0.1, dynamic_rho: true)
+  def initialize(enviroment, start_vertex, max_iterations, num_ants,
+    alpha: 1, beta: 1, q: 1, rho: 0.5, dynamic_rho: true, min_rho: 0.3, max_rho: 0.7)
     @enviroment = enviroment
     @start_vertex = start_vertex
     @max_iterations = max_iterations
@@ -20,6 +19,13 @@ class ACO
     @initial_rho = rho
     @rho = rho
     @rho_iterations = 0
+
+    @min_rho = min_rho
+    @max_rho = max_rho
+  end
+
+  def dynamic_rho?
+    @dynamic_rho
   end
 
   def optimization_value(solution)
@@ -93,7 +99,7 @@ class ACO
       puts "Best solution so far: #{best_solution.inspect}"
       puts "Optimization value: #{optimization_value(best_solution)}"
       @solution = best_solution
-      reset_rho if dynamic_rho?
+      increase_rho if dynamic_rho?
     else
       decrease_rho if dynamic_rho?
     end
@@ -101,20 +107,28 @@ class ACO
 
   # Decreases evaporation rate depending on iterations without improvements
   def decrease_rho
-    @rho_iterations += 1 if @rho_iterations < 10
-    if @rho > 0.0 and @rho < 1.0
-      @rho += (@rho_iterations / 10.0) - 0.1
-      puts "Updated evaporation rate to #{@rho}"
+    if @rho >= @min_rho and @rho < @max_rho
+      @rho_iterations += 1 if @rho_iterations < 10
+      update_rho
     end
+  end
+
+  def increase_rho
+    if @rho > @min_rho and @rho <= @max_rho
+      @rho_iterations -= 1 if @rho_iterations > -10
+      update_rho
+    end
+  end
+
+  def update_rho
+    @rho = @initial_rho + (@rho_iterations / 10.0)
+    @rho = @rho.round(1)
+    puts "Updated evaporation rate to #{@rho}"
   end
 
   # Reset rho value
   def reset_rho
     @rho_iterations = 0
     @rho = @initial_rho
-  end
-
-  def dynamic_rho?
-    @dynamic_rho
   end
 end
