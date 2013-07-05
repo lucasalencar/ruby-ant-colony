@@ -6,7 +6,7 @@ begin
     max_iterations: 10,
     num_ants: 100,
     alpha: 1, # Strength of pheromone on decision probability (between 0 and 1)
-    beta: 0, # Strength of heuristic on decision probability (between 0 and 1)
+    beta: 1, # Strength of heuristic on decision probability (between 0 and 1)
     q: 1.0, # Rate of pheromone increase
     dynamic_rho: true, # Activates dynamic rho
     rho: 0.5, # Rate of pheromone evaporation (between 0 and 1)
@@ -14,9 +14,9 @@ begin
     max_rho: 0.7 # Max limit for rho
   }
   enviroment = read_example('./benchmarks/tsplib/att48.tsp')
-  a = load_example(enviroment, :shortest_path, options)
+  a = load_example(enviroment, '1', :tsp, options)
   puts "Running algorithm"
-  a.run('45')
+  a.run
 rescue Interrupt
   puts "Interrupted!"
 end
