@@ -2,15 +2,15 @@ require_relative "../aco/aco"
 
 class ACOTsp < ACO
   def initialize(enviroment, start_vertex, max_iterations = 20, num_ants = 100,
-    alpha: 1, beta: 1, q: 1, rho: 0.5, dynamic_rho: true, min_rho: 0.3, max_rho: 0.7)
+    alpha = 1, beta = 1, q = 1, rho = 0.5, dynamic_rho = true, min_rho = 0.3, max_rho = 0.7)
     super(
       enviroment,
       start_vertex,
       max_iterations,
       num_ants,
-      alpha: alpha, beta: beta, q: q,
-      rho: rho, dynamic_rho: dynamic_rho,
-      max_rho: max_rho, min_rho: min_rho
+      alpha, beta, q,
+      rho, dynamic_rho,
+      max_rho, min_rho
     )
   end
 

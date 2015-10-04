@@ -8,9 +8,9 @@ class ACOShortestPath < ACO
       start_vertex,
       max_iterations,
       num_ants,
-      alpha: alpha, beta: beta, q: q,
-      rho: rho, dynamic_rho: dynamic_rho,
-      max_rho: max_rho, min_rho: min_rho
+      alpha, beta, q,
+      rho, dynamic_rho,
+      max_rho, min_rho
     )
   end
 

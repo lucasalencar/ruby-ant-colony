@@ -4,7 +4,7 @@ require_relative "running"
 begin
   options = {
     max_iterations: 10,
-    num_ants: 100,
+    num_ants: 10,
     alpha: 1, # Strength of pheromone on decision probability (between 0 and 1)
     beta: 1, # Strength of heuristic on decision probability (between 0 and 1)
     q: 1.0, # Rate of pheromone increase
@@ -13,6 +13,7 @@ begin
     min_rho: 0.3, # Min limit for rho
     max_rho: 0.7 # Max limit for rho
   }
+
   enviroment = read_example('./benchmarks/tsplib/att48.tsp')
   a = load_example(enviroment, '1', :tsp, options)
   puts "Running algorithm"

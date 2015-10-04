@@ -4,8 +4,11 @@ require_relative "ant_enviroment"
 class ACO
   attr_reader :alpha, :beta, :rho, :q, :solution, :max_rho, :min_rho
 
+  DEBUG = false
+  SHOW_PROGRESS = false
+
   def initialize(enviroment, start_vertex, max_iterations, num_ants,
-    alpha: 1, beta: 1, q: 1, rho: 0.5, dynamic_rho: true, min_rho: 0.3, max_rho: 0.7)
+    alpha = 1, beta = 1, q = 1, rho = 0.5, dynamic_rho = true, min_rho = 0.3, max_rho = 0.7)
     @enviroment = enviroment
     @start_vertex = start_vertex
     @max_iterations = max_iterations
@@ -61,9 +64,9 @@ class ACO
   def run(target_state)
     @enviroment.reset_pheromones
     @max_iterations.times do |iteration|
-      puts "\n~> Iteration: #{iteration + 1}."
+      puts "\n~> Iteration: #{iteration + 1}." if SHOW_PROGRESS
       construct_ant_solution(target_state)
-      puts
+      puts if SHOW_PROGRESS
       update_pheromones
       store_solution unless @ants.empty?
     end
@@ -74,10 +77,12 @@ class ACO
   # Generate ants and makes ants contruct solutions
   def construct_ant_solution(target_state)
     @ants = generate_ants(target_state)
-    puts "Constructing solution with #{@ants.size} ants."
+    puts "Constructing solution with #{@ants.size} ants." if DEBUG
     @ants.each do |ant|
       ant.construct_solution(@enviroment, @alpha, @beta)
-      print '.'; $stdout.flush
+      if SHOW_PROGRESS
+        print '.'; $stdout.flush
+      end
     end
     @ants.delete_if { |ant| not ant.alive? }
   end
@@ -85,7 +90,7 @@ class ACO
   # Update pheromones on the enviroment
   # based on the paths found by ants
   def update_pheromones
-    puts "Updating pheromones with #{@ants.size} ants."
+    puts "Updating pheromones with #{@ants.size} ants." if DEBUG
     @enviroment.evaporate(@rho)
     @ants.each do |ant|
       @enviroment.update_pheromones(ant.path, optimization_value(ant.path), @q)
@@ -96,8 +101,8 @@ class ACO
   def store_solution
     best_solution = best_ant(@ants).path
     if @solution.nil? or better_solution?(best_solution, @solution)
-      puts "Best solution so far: #{best_solution.inspect}"
-      puts "Optimization value: #{optimization_value(best_solution)}"
+      puts "Best solution so far: #{best_solution.inspect}" if SHOW_PROGRESS
+      puts "Optimization value: #{optimization_value(best_solution)}" if SHOW_PROGRESS
       @solution = best_solution
       increase_rho if dynamic_rho?
     else
@@ -123,7 +128,7 @@ class ACO
   def update_rho
     @rho = @initial_rho + (@rho_iterations / 10.0)
     @rho = @rho.round(1)
-    puts "Updated evaporation rate to #{@rho}"
+    puts "Updated evaporation rate to #{@rho}" if DEBUG
   end
 
   # Reset rho value

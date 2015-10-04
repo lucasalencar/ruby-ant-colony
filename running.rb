@@ -13,13 +13,12 @@ def problem_class(problem)
 end
 
 def read_example(example_path)
-  puts "Reading file"
+  # puts "Reading file"
   FileTspReader.example(example_path, AntEnviroment)
 end
 
 def load_example(enviroment, start, problem, ops = {})
   # ACOTSP.new(enviroment, start_vertex, max_iterations, num_ants, alpha, beta, q, rho, dynamic_rho, min_rho, max_rho)
   problem_class(problem).new(enviroment, start, ops[:max_iterations], ops[:num_ants],
-    alpha: ops[:alpha], beta: ops[:beta], q: ops[:q], rho: ops[:rho],
-    dynamic_rho: ops[:dynamic_rho], min_rho: ops[:min_rho], max_rho: ops[:max_rho])
+    ops[:alpha], ops[:beta], ops[:q], ops[:rho], ops[:dynamic_rho], ops[:min_rho], ops[:max_rho])
 end
